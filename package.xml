@@ -4,7 +4,7 @@
   <name>lib_mem_dmabuf</name>
   <version>1.0.0</version>
   <description>Library for interact with Linux DMA buffer</description>
-  <maintainer email="quic_penwang@quicinc.com">Peng Wang</maintainer>
+  <maintainer email="penwang@qti.qualcomm.com">Peng Wang</maintainer>
   <license>BSD-3-Clause</license>
 
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
