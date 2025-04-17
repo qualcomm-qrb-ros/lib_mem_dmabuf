@@ -10,16 +10,46 @@ env:
   QCOM_SELECTED_BSP: custom
 
 jobs:
+
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      machine: ${{ steps.parse-config.outputs.machine }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y python3-pip
+          sudo pip3 install yq
+
+      - name: Parse config.yaml
+        id: parse-config
+        run: |
+          # Find config.yaml in case there're multiple packages
+          all_machines=()
+          config_files=$(find . -name "config.yaml")
+          for conf_file in $config_files;do
+            machines=$(yq '.machines[].name' ${conf_file})
+            all_machines+=("$machines")
+          done
+
+          unique_machines=$(printf '%s\n' "${all_machines[@]}" | sort | uniq)
+          echo "Machines:" "${unique_machines[@]}"
+
+          all_machines_json=$(printf '%s\n' "${unique_machines[@]}" | jq -s -c)
+          
+          echo "machine=${all_machines_json}" >> $GITHUB_OUTPUT
+            
   build:
+    needs: generate-matrix
     runs-on: [self-hosted, x86]
     timeout-minutes: 720
     strategy:
       fail-fast: false
-      matrix:
-        machine:
-          - qcs6490-rb3gen2-vision-kit
-          - qcs9075-rb8-core-kit
-          - qcs8300-ride-sx
+      matrix: 
+        machine: ${{ fromJson(needs.generate-matrix.outputs.machine) }}
         distro:
           - qcom-robotics-ros2-jazzy
     steps:
@@ -69,7 +99,27 @@ jobs:
           export AMENT_PREFIX_PATH="${OECORE_NATIVE_SYSROOT}/usr:${OECORE_TARGET_SYSROOT}/usr"
           export PYTHONPATH=${PYTHONPATH}:${OECORE_NATIVE_SYSROOT}/usr/lib/python3.12/site-packages/:${OECORE_TARGET_SYSROOT}/usr/lib/python3.12/site-packages/
 
-          colcon build --merge-install --cmake-args \
+          # Get ROS package list
+          packages=$(colcon list)
+
+          # Get ignore list
+          ignore_list=()
+
+          while read -r package pkg_path _; do
+            cd ${WORKSPACE}/${pkg_path}
+
+            if [ -f ./config.yaml ]; then
+              if ! grep -q "$MACHINE" ./config.yaml;then
+                ignore_list+=("${package}")
+              fi
+            else
+              echo "config.yaml does not exist!"
+            fi
+          done <<< "$packages"
+          echo "Ignore list:" "${ignore_list[@]}"
+
+          cd ${WORKSPACE}
+          colcon build --packages-ignore "${ignore_list[@]}" --merge-install --cmake-args \
             -DPython3_ROOT_DIR=${OECORE_TARGET_SYSROOT}/usr \
             -DPython3_NumPy_INCLUDE_DIR=${OECORE_TARGET_SYSROOT}/usr/lib/python3.12/site-packages/numpy/core/include \
             -DPYTHON_SOABI=cpython-312-aarch64-linux-gnu -DCMAKE_STAGING_PREFIX="$(pwd)/install" \
@@ -82,7 +132,8 @@ jobs:
           build_dir=${PERSIST_DIR}/builds/${GITHUB_RUN_ID}
           mkdir -p $build_dir
 
-          tar -cvf ${build_dir}/artifacts.tar ${WORKSPACE}/install ${WORKSPACE}/build ${WORKSPACE}/log
+          tar -cvf ${build_dir}/${{ github.event.repository.name }}-${MACHINE}-${DISTRO}-${QCOM_SELECTED_BSP}-artifacts.tar --transform "s|^${WORKSPACE}/||" -C ${WORKSPACE} install build log
+
           ##########################debug###############################
           ls -al  ${build_dir}
 
