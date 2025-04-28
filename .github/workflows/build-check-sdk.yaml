@@ -10,37 +10,8 @@ env:
   QCOM_SELECTED_BSP: custom
 
 jobs:
-
   generate-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      machine: ${{ steps.parse-config.outputs.machine }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get install -y python3-pip
-          sudo pip3 install yq
-
-      - name: Parse config.yaml
-        id: parse-config
-        run: |
-          # Find config.yaml in case there're multiple packages
-          all_machines=()
-          config_files=$(find . -name "config.yaml")
-          for conf_file in $config_files;do
-            machines=$(yq '.machines[].name' ${conf_file})
-            all_machines+=("$machines")
-          done
-
-          unique_machines=$(printf '%s\n' "${all_machines[@]}" | sort | uniq)
-          echo "Machines:" "${unique_machines[@]}"
-
-          all_machines_json=$(printf '%s\n' "${unique_machines[@]}" | jq -s -c)
-          
-          echo "machine=${all_machines_json}" >> $GITHUB_OUTPUT
+    uses: ./.github/workflows/parse_config.yml
             
   build:
     needs: generate-matrix

@@ -1,0 +1,47 @@
+name: Parse hardware configuration file
+
+on: 
+  workflow_call:
+    inputs:
+      config-name:
+        required: false
+        type: string
+        default: "config.yaml"
+    outputs:
+      machine:
+        description: "Support platforms"
+        value: ${{ jobs.parse_job.outputs.machine }}
+
+jobs:
+  parse_job:
+    runs-on: ubuntu-latest
+    outputs:
+      machine: ${{ steps.parse-config.outputs.machine }}
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y python3-pip
+          sudo pip3 install yq
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: ${{ github.workspace }}/${{ github.repository }}
+
+      - name: Parse config.yaml
+        id: parse-config
+        run: |
+          # Find config.yaml in case there're multiple packages
+          all_machines=()
+          config_files=$(find ${{ github.workspace }}/${{ github.repository }} -name "${{ inputs.config-name }}")
+          for conf_file in $config_files;do
+            machines=$(yq '.machines[].name' ${conf_file})
+            all_machines+=("$machines")
+          done
+
+          unique_machines=$(printf '%s\n' "${all_machines[@]}" | sort | uniq)
+          echo "Machines:" "${unique_machines[@]}"
+
+          all_machines_json=$(printf '%s\n' "${unique_machines[@]}" | jq -s -c)
+          
+          echo "machine=${all_machines_json}" >> $GITHUB_OUTPUT
