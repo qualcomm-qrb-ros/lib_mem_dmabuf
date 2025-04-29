@@ -36,7 +36,7 @@ jobs:
             all_machines=("qcs6490-rb3gen2-vision-kit" "qcs9075-rb8-core-kit" "qcs8300-ride-sx")
           else
             for conf_file in $config_files;do
-              machines=$(yq '.machines[].name' ${conf_file})
+              machines=$(yq '.packages[].machines[].name' ${conf_file})
               all_machines+=("$machines")
             done
           fi
@@ -115,11 +115,13 @@ jobs:
             cd ${WORKSPACE}/${pkg_path}/.github/
 
             if [ -f ./config.yaml ]; then
-              if ! grep -q "$MACHINE" ./config.yaml;then
+              machine_supported=$(yq '.packages[] | select(.name == "'"${package}"'") | .machines[] | select(.name == "'"${MACHINE}"'")' ./config.yaml)
+              if [ -z "${machine_supported}" ];then
                 ignore_list+=("${package}")
               fi
             else
               echo "config.yaml does not exist!"
+              ignore_list=()
             fi
           done <<< "$packages"
           echo "Ignore list:" "${ignore_list[@]}"
