@@ -33,7 +33,7 @@ jobs:
 
           if [ -z "$config_files" ];then
             # If no config file, all platforms are supported.
-            all_machines=("qcs6490-rb3gen2-vision-kit" "qcs9075-rb8-core-kit" "qcs8300-ride-sx")
+            all_machines=("\"qcs6490-rb3gen2-vision-kit\"" "\"qcs9075-rb8-core-kit\"" "\"qcs8300-ride-sx\"")
           else
             for conf_file in $config_files;do
               machines=$(yq '.packages[].machines[].name' ${conf_file})
@@ -111,8 +111,8 @@ jobs:
           # Get ignore list
           ignore_list=()
 
-          while read -r package pkg_path _; do
-            cd ${WORKSPACE}/${pkg_path}/.github/
+          while read -r package _ _; do
+            cd ${{ github.workspace }}/ros_ws/${{ github.event.repository.name }}/.github/
 
             if [ -f ./config.yaml ]; then
               machine_supported=$(yq '.packages[] | select(.name == "'"${package}"'") | .machines[] | select(.name == "'"${MACHINE}"'")' ./config.yaml)
