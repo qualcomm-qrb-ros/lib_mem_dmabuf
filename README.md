@@ -20,7 +20,7 @@
 This package uses the Ament CMake build system for easy integration into ROS 2 projects.
 
 ```bash
-git clone https://github.com/quic-qrb-ros/lib_mem_dmabuf.git
+git clone https://github.com/qualcomm-qrb-ros/lib_mem_dmabuf.git
 colcon build
 ```
 
@@ -29,15 +29,12 @@ For the Qualcomm QCLinux platform, we provide two ways to build this package.
 <details>
 <summary>On-Device Compilation with Docker</summary>
 
-1. Set up the QCLinux Docker environment following the [QRB ROS Docker Setup](https://github.com/quic-qrb-ros/qrb_ros_docker?tab=readme-ov-file#quickstart).
+1. Set up the QCLinux Docker environment following the [QRB ROS Docker Setup](https://github.com/qualcomm-qrb-ros/qrb_ros_docker?tab=readme-ov-file#quickstart).
 
 2. Clone and build the source code:
 
     ```bash
-    cd ~/qrb_ros_ws/src/qrb_ros_docker/scripts && \
-    bash docker_run.sh
-
-    git clone https://github.com/quic-qrb-ros/lib_mem_dmabuf.git
+    git clone https://github.com/qualcomm-qrb-ros/lib_mem_dmabuf.git
     colcon build
     ```
 
@@ -45,7 +42,7 @@ For the Qualcomm QCLinux platform, we provide two ways to build this package.
 
 <details><summary>Cross Compilation with QIRP SDK</summary>
 
-1. Set up the QIRP SDK environment: Refer to [QRB ROS Documents: Getting Started](https://quic-qrb-ros.github.io/main/getting_started/environment_setup.html)
+1. Set up the QIRP SDK environment: Refer to [QRB ROS Documents: Getting Started](https://qualcomm-qrb-ros.github.io/main/getting_started/environment_setup.html)
 
 2. Create a workspace and clone the source code:
 
@@ -53,18 +50,13 @@ For the Qualcomm QCLinux platform, we provide two ways to build this package.
     mkdir -p <qirp_decompressed_workspace>/qirp-sdk/ros_ws
     cd <qirp_decompressed_workspace>/qirp-sdk/ros_ws
 
-    git clone https://github.com/quic-qrb-ros/lib_mem_dmabuf.git
+    git clone https://github.com/qualcomm-qrb-ros/lib_mem_dmabuf.git
     ```
 
 3. Build the source code with QIRP SDK:
 
     ```bash
-    colcon build --merge-install --cmake-args \
-      -DPYTHON_EXECUTABLE=${OECORE_NATIVE_SYSROOT}/usr/bin/python3 \
-      -DPython3_NumPy_INCLUDE_DIR=${OECORE_NATIVE_SYSROOT}/usr/lib/python3.12/site-packages/numpy/core/include \
-      -DPYTHON_SOABI=cpython-312-aarch64-linux-gnu \
-      -DCMAKE_MAKE_PROGRAM=/usr/bin/make \
-      -DBUILD_TESTING=OFF
+    colcon build --cmake-args ${CMAKE_ARGS}
     ```
 
 </details>
@@ -105,7 +97,7 @@ if (buf->map()) {
 // fd will auto close when buf leaves scope
 ```
 
-You can get more details from [here](https://quic-qrb-ros.github.io/main/index.html).
+You can get more details from [here](https://qualcomm-qrb-ros.github.io/main/index.html).
 
 ## Contributing
 
