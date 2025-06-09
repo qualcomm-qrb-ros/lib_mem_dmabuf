@@ -1,0 +1,15 @@
+name: Sync Debian Branches
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  commitlint:
+    uses: qualcomm-qrb-ros/.github/.github/workflows/sync-debian.yml@sync_debian_branch
+    secrets:
+      TOKEN: ${{ secrets.GITHUB_TOKEN }}
