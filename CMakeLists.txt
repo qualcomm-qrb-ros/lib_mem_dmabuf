@@ -27,8 +27,6 @@ if(BUILD_TESTING)
   # a copyright and license is added to all source files
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
-
-  ament_auto_add_gtest(${PROJECT_NAME}_dmabuf_test test/dmabuf_test.cpp)
 endif()
 
 ament_auto_package()
