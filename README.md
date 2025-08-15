@@ -140,6 +140,13 @@ if (buf->map()) {
 
 ## 👨‍💻 Build from source
 
+### Dependencies
+Install dependencies `ros-dev-tools`:
+```shell
+sudo apt install ros-dev-tools
+```
+
+### Build
 Download the source code and build it with colcon
 ```bash
 source /opt/ros/jazzy/setup.bash
