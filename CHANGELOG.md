@@ -1,6 +1,6 @@
 # Changelog for package lib_mem_dmabuf
 
-## 1.1.0-jazzy (2025-05-19)
+## 1.1.0 (2025-05-19)
 - Fix Dmabuf destroy callback crash issue
 - Enable CI builders and checkers
 - Contributors: Peng Wang, Zhaoyuan Cheng, Jiaxing Shi
