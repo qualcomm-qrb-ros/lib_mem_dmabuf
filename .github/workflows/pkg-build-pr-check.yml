@@ -1,0 +1,36 @@
+name: Package Build PR Check
+# This workflow will execute when a PR is open against the configured branch.
+# On top of whatever kind of CI/CD logic happens in this upstream repo, this
+# workflow will make sure that what is attempted to be merged in the main release
+# branch won't break the debian package. The variable PKG_REPO_GITHUB_NAME needs to
+# be set in the repo where this file reside. This variable hold the packaging repo
+# name on github associated to this upstream repo. What will happen is that the PR
+# triggering this workflow will go knock on the packaging repo's door and trigger
+# a full build of the package if it were to include these changes.
+
+on:
+  pull_request_target:
+    branches: [ main, development ]
+    types:
+      - ready_for_review
+      - synchronize
+    paths-ignore:
+      - '.github/**'
+
+permissions:
+ contents: read
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  package-build-pr-check:
+    uses: qualcomm-linux/qcom-build-utils/.github/workflows/qcom-upstream-pr-pkg-build-reusable-workflow.yml@main
+    with:
+      qcom-build-utils-ref: main
+      upstream-repo: ${{ github.event.pull_request.head.repo.full_name }}
+      upstream-repo-ref: ${{ github.event.pull_request.head.ref }}
+      pkg-repo: ${{vars.PKG_REPO_GITHUB_NAME}}
+      pr-number: ${{github.event.pull_request.number}}
+    secrets: inherit
