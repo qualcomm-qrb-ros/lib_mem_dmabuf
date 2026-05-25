@@ -1,5 +1,13 @@
 # Changelog for package lib_mem_dmabuf
 
+## 1.1.2 (2026-05-25)
+
+- fix: remove unit test which depends on platform
+- docs: fix commands in README
+- ci: refactor GitHub action workflows
+- ci: add Package Build PR Check workflow
+- Contributors: Peng Wang, Jiaxing Shi
+
 ## 1.1.1-jazzy (2025-09-01)
 
 - Refactor documents to support Ubuntu as Tie 1 platform
