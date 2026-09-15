@@ -17,7 +17,8 @@
 
 namespace lib_mem_dmabuf
 {
-DmaBuffer::DmaBuffer(int fd, std::size_t size) : fd_(fd), size_(size) {}
+DmaBuffer::DmaBuffer(int fd, std::size_t size)
+: fd_(fd), size_(size) {}
 
 DmaBuffer::~DmaBuffer()
 {
