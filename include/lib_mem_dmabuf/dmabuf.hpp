@@ -27,16 +27,16 @@ public:
   void set_destroy_callback(std::function<void(DmaBuffer *)> cb);
   bool set_data(void * data, std::size_t size);
 
-  int fd() const { return fd_; }
-  int size() const { return size_; }
-  void * addr() const { return addr_; }
+  int fd() const {return fd_;}
+  int size() const {return size_;}
+  void * addr() const {return addr_;}
 
 private:
-  int fd_{ 0 };
-  int size_{ 0 };
-  void * addr_{ nullptr };
-  bool auto_release_{ true };
-  std::function<void(DmaBuffer *)> destroy_callback_{ nullptr };
+  int fd_{0};
+  int size_{0};
+  void * addr_{nullptr};
+  bool auto_release_{true};
+  std::function<void(DmaBuffer *)> destroy_callback_{nullptr};
 };
 
 }  // namespace lib_mem_dmabuf
